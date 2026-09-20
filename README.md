@@ -1,6 +1,6 @@
-# Walnut, raisin & saffron
+# Zarchin · زرچین
 
-A local-only, bilingual business website built with Next.js App Router, React, TypeScript, Tailwind CSS v4, and Motion. The revised editorial design replaces the original Taste-skill direction at the user's request: layered imagery in the hero, three separate scroll-revealed product chapters, earthy colour treatments, and expressive typography.
+A local-only, bilingual business website built with Next.js App Router, React, TypeScript, Tailwind CSS v4, and Motion. The revised editorial design replaces the original Taste-skill direction at the user's request: a full-width photographic hero, three separate scroll-revealed product chapters, earthy colour treatments, and expressive typography.
 
 ## Run
 
@@ -24,13 +24,13 @@ Browser tests expect a running local server and Microsoft Edge. Configure `TEST_
 
 ## Business content
 
-Edit `src/content/site.ts` for both languages and the `business` object. The current descriptive wordmark and `w.` favicon are draft identity, not a supplied business name or logo. Supply the real name, phone, email, address, and optional WhatsApp/Instagram links. WhatsApp uses international digits without spaces or `+`; Instagram requires a full HTTPS URL. Empty contact methods are omitted. No fake submission or checkout exists.
+Edit `src/content/site.ts` for both languages and the `business` object. The brand uses the supplied Zarchin logo, extracted onto a genuinely transparent PNG. Supply phone, email, address, and optional WhatsApp/Instagram links. WhatsApp uses international digits without spaces or `+`; Instagram requires a full HTTPS URL. Empty contact methods are omitted. No checkout or payment integration exists.
 
 Confirm product varieties, packaging, delivery terms, business story, and sourcing before adding claims. Have a fluent Persian speaker approve final copy and real brand terminology.
 
 ## Before public launch
 
-1. Replace draft identity and verify contact details in both languages.
+1. Verify contact details in both languages.
 2. Review representative imagery against actual products; replace if necessary.
 3. Set `business.isDraft` to `false` after review.
 4. Set `SITE_URL` to the real HTTPS origin and rebuild for canonical URLs and sitemap. Local/draft builds are intentionally noindex.
@@ -40,7 +40,7 @@ Confirm product varieties, packaging, delivery terms, business story, and sourci
 
 `public/images/walnuts.png`, `raisins.png`, and `saffron.png` are the new representative product scenes. Provenance and prompts are in `ASSETS.md`. The original `still-life.png` is retained but no longer displayed. Images use Next Image with responsive sizing. Cormorant Garamond, Outfit, and Vazirmatn are installed through Fontsource and bundled locally by `next/font/local`; no runtime font CDN is required. Font licenses are included in the corresponding npm packages.
 
-The hero is a static composition of three separate image windows. Each product gets its own large image and copy chapter. Chapters reveal once on entering the viewport, using opacity and a 24px vertical transition; reduced-motion preferences disable these transitions. There is no image zoom, product rotation, scroll hijacking, WebGL, or 3D model.
+The full-width hero crossfades between three still product scenes using keyboard-accessible tabs. Each product has its own large image and copy chapter. Chapters reveal once on entering the viewport with an image mask and staggered text. Reduced-motion preferences disable these transitions. Desktop and mobile menus animate on click, support Escape, and return focus to their trigger. Section navigation scrolls smoothly without adding URL fragments. Visible design-preview banners have been removed. There is no image zoom, product rotation, scroll hijacking, WebGL, or 3D model.
 
 ## Verification
 

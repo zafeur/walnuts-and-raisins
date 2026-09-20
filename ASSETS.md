@@ -40,3 +40,9 @@ Composition/framing: wide landscape 3:2, high resolution, oblique tabletop view 
 Lighting/mood: directional natural side lighting, soft long shadows, calm refined atmosphere, dimensional warm natural food tones against pale neutral setting.
 
 Constraints: exactly one photograph, no text, logos, packaging, hands, people, floating objects, website UI or graphic overlays.
+
+## Zarchin logo
+
+Source: user-supplied black-and-gold Persian logo. Production asset: public/images/zarchin-logo-transparent.png (1338 × 1176, RGBA). The original supplied image remains at public/images/zarchin-logo.png. Background extraction used the built-in imagegen tool; no CSS blending is needed. Alpha verified from 0 to 255, with transparent corner pixels.
+
+Prompt: Use case: background-extraction. Edit target: supplied Zarchin Persian logo. Remove only the white background, including white enclosed spaces within the leaf emblem and calligraphy. Return a PNG with genuine transparent alpha, no white matte or checkerboard drawn into the image. Preserve the exact black and gold logo, exact Persian text زرچین, its lettering, gold dots, paired leaf emblem, composition, proportions and color. Do not redesign, add elements or change lettering. Keep clean antialiased edges without a white halo. Logo centered with modest transparent padding.

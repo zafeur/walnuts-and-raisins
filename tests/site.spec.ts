@@ -1,8 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-test("English entry, localized routes, metadata, and contact switching", async ({ page, request }) => {
+test("English entry, localized routes, metadata, and contact switching", async ({
+  page,
+  request,
+}) => {
   const errors: string[] = [];
-  page.on("pageerror", error => errors.push(error.message));
+  page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await expect(page).toHaveURL(/\/en$/);
   for (const locale of ["en", "fa"]) {
@@ -10,14 +13,25 @@ test("English entry, localized routes, metadata, and contact switching", async (
       const response = await page.goto(`/${locale}${suffix}`);
       expect(response?.status()).toBe(200);
       await expect(page.locator("html")).toHaveAttribute("lang", locale);
-      await expect(page.locator("html")).toHaveAttribute("dir", locale === "fa" ? "rtl" : "ltr");
+      await expect(page.locator("html")).toHaveAttribute(
+        "dir",
+        locale === "fa" ? "rtl" : "ltr",
+      );
       await expect(page.locator("h1")).toBeVisible();
-      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `http://localhost:3000/${locale}${suffix}`);
-      await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        "href",
+        `http://localhost:3000/${locale}${suffix}`,
+      );
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+        "content",
+        /noindex/,
+      );
       for (const image of await page.locator("main img").all()) {
         await image.scrollIntoViewIfNeeded();
         await expect(image).toBeVisible();
-        await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+        await expect
+          .poll(() => image.evaluate((el: HTMLImageElement) => el.naturalWidth))
+          .toBeGreaterThan(0);
       }
     }
   }
@@ -26,20 +40,40 @@ test("English entry, localized routes, metadata, and contact switching", async (
   await expect(page).toHaveURL(/\/fa\/contact$/);
   await page.getByRole("link", { name: "Switch to English" }).click();
   await expect(page).toHaveURL(/\/en\/contact$/);
-  await expect(page.getByText("Contact details coming soon").first()).toBeVisible();
-  expect(await page.locator('a[href^="tel:"],a[href^="mailto:"],form').count()).toBe(0);
+  await expect(page.getByLabel("Your name", { exact: true })).toBeVisible();
+  await page.getByLabel("Your name", { exact: true }).fill("Sara");
+  await expect(page.getByLabel("Your name", { exact: true })).toHaveValue(
+    "Sara",
+  );
+  await expect(
+    page.getByRole("button", { name: "Send enquiry" }),
+  ).toBeDisabled();
+  await expect(
+    page.getByText("This form is a preview. Sending is not available yet."),
+  ).toBeVisible();
+  expect(await page.locator('a[href^="tel:"],a[href^="mailto:"]').count()).toBe(
+    0,
+  );
   expect(errors).toEqual([]);
   expect((await request.get("/de")).status()).toBe(404);
-  expect(await (await request.get("/sitemap.xml")).text()).toContain("/fa/contact");
+  expect(await (await request.get("/sitemap.xml")).text()).toContain(
+    "/fa/contact",
+  );
 });
 
-test("mobile navigation, RTL layout, and no overflow at narrow widths", async ({ page }) => {
+test("mobile navigation, RTL layout, and no overflow at narrow widths", async ({
+  page,
+}) => {
   for (const width of [360, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     for (const locale of ["en", "fa"]) {
       for (const suffix of ["", "/contact"]) {
         await page.goto(`/${locale}${suffix}`);
-        expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+        expect(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= window.innerWidth,
+          ),
+        ).toBe(true);
       }
     }
   }
@@ -51,21 +85,47 @@ test("mobile navigation, RTL layout, and no overflow at narrow widths", async ({
   await expect(page.locator("#mobile-menu")).toHaveCount(0);
   await expect(page.locator("#menu-toggle")).toBeFocused();
   await page.getByRole("button", { name: "Menu", exact: true }).click();
-  await page.locator("#mobile-menu").getByRole("link", { name: "Contact us" }).click();
+  await page
+    .locator("#mobile-menu")
+    .getByRole("link", { name: "Contact us" })
+    .click();
   await expect(page).toHaveURL(/\/en\/contact$/);
   await expect(page.locator("#mobile-menu")).toHaveCount(0);
 });
 
-test("separate product scenes are navigable and reduced motion stays static", async ({ page }) => {
+test("separate product scenes are navigable and reduced motion stays static", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en");
-  await expect(page.locator(".hero-composition img")).toHaveCount(3);
+  await expect(page.locator(".hero-backdrop img")).toHaveCount(3);
+  await page.getByRole("tab", { name: /02 Raisins/ }).click();
+  await expect(page.locator("#scene-tab-raisins")).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator("#scene-tab-saffron")).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
   for (const name of ["walnuts", "raisins", "saffron"]) {
-    await page.locator(`.ingredient-bar a[href="#${name}"]`).click();
-    await expect(page).toHaveURL(new RegExp(`#${name}$`));
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await page.locator("#products-toggle").click();
+    await page
+      .locator("#products-menu")
+      .getByRole("link", { name: new RegExp(name, "i") })
+      .click();
+    await expect(page).toHaveURL(/\/en$/);
     await expect(page.locator(`#${name} h3`)).toBeInViewport();
-    await expect(page.locator(`#${name} img`)).toHaveAttribute("src", new RegExp(name));
+    await expect(page.locator(`#${name} img`)).toHaveAttribute(
+      "src",
+      new RegExp(name),
+    );
   }
+  await page.goto("/en#raisins");
+  await expect(page).toHaveURL(/\/en$/);
+  await expect(page.locator("#raisins h3")).toBeInViewport();
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const scene of await page.getByTestId("scene-reveal").all()) {
     await expect(scene).toHaveCSS("transform", "none");
@@ -80,12 +140,26 @@ test("visual review captures", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(`/${locale}`);
     await page.evaluate(() => document.fonts.ready);
-    for (const img of await page.locator("main img").all()) { await img.scrollIntoViewIfNeeded(); await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0); }
+    for (const img of await page.locator("main img").all()) {
+      await img.scrollIntoViewIfNeeded();
+      await expect
+        .poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth))
+        .toBeGreaterThan(0);
+    }
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.screenshot({ path: `artifacts/${locale}-desktop.png`, fullPage: true });
+    await page.screenshot({
+      path: `artifacts/${locale}-desktop.png`,
+      fullPage: true,
+    });
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.screenshot({ path: `artifacts/${locale}-mobile.png`, fullPage: true });
+    await page.screenshot({
+      path: `artifacts/${locale}-mobile.png`,
+      fullPage: true,
+    });
     await page.goto(`/${locale}/contact`);
-    await page.screenshot({ path: `artifacts/${locale}-contact-mobile.png`, fullPage: true });
+    await page.screenshot({
+      path: `artifacts/${locale}-contact-mobile.png`,
+      fullPage: true,
+    });
   }
 });

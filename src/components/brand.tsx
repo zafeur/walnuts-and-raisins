@@ -1,10 +1,19 @@
-import Image from "next/image";
 import Link from "next/link";
-import { business, type Locale } from "@/content/site";
+import Image from "next/image";
+import type { Locale } from "@/content/site";
 
 export function Brand({ locale }: { locale: Locale }) {
-  return <Link href={`/${locale}`} className="wordmark">
-    <Image src="/brand-mark.svg" width={52} height={60} alt="" className="brand-symbol" />
-    <span className="brand-type"><span className="brand-name">{business.isDraft ? (locale === "en" ? "Walnut & Raisin" : "گردو و کشمش") : business.name[locale]}</span><span className="brand-signature">{locale === "en" ? "S A F F R O N" : "زعفران"}</span></span>
-  </Link>;
+  return (
+    <Link href={`/${locale}`} className="wordmark">
+      <Image
+        className="brand-logo"
+        src="/images/zarchin-logo-transparent.png"
+        alt="زرچین — Zarchin"
+        width={1338}
+        height={1176}
+        sizes="(max-width: 767px) 72px, 124px"
+        priority
+      />
+    </Link>
+  );
 }
